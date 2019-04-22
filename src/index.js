@@ -1,6 +1,6 @@
 
 let Store;
-if ( typeof window !== 'undefined' && window.localStorage) {
+if (typeof window !== 'undefined' && window.localStorage) {
     // navigator
     Store = {
         write: (file, data) => {
@@ -29,20 +29,19 @@ if ( typeof window !== 'undefined' && window.localStorage) {
     }
 }
 
-let timeId = 0;
-let lazyWrite = (file, data) => {
-    if (timeId) {
-        clearTimeout(timeId);
-    }
-    timeId = setTimeout(() => {
-        Store.write(file, data);
-        timeId = 0;
-        // console.log('REAL WRITE', { file: JSON.stringify(data) })
-    }, 200)
-}
-
 let ProxyDb = function (file = 'ProxyDb.json', data = {}, isLazy = true) {
-    let handler, getProxyObject;
+    let handler, getProxyObject, lazyWrite, timeId = 0;
+
+    lazyWrite = (file, data) => {
+        if (timeId) {
+            clearTimeout(timeId);
+        }
+        timeId = setTimeout(() => {
+            Store.write(file, data);
+            timeId = 0;
+            // console.log('REAL WRITE', { file: JSON.stringify(data) })
+        }, 200)
+    }
 
     file = file.toString();
     if (['Object', 'Array'].indexOf(data.constructor.name) === -1) {
@@ -53,14 +52,16 @@ let ProxyDb = function (file = 'ProxyDb.json', data = {}, isLazy = true) {
     } else {
         isLazy ? lazyWrite(file, data) : Store.write(file, data);
     }
-    getProxyObject = (data)=>{
+
+
+    getProxyObject = (data) => {
         let _proxy = new Proxy(data, handler);
-        Object.keys( data ).forEach( k=>{
-            _proxy[k]=data[k];
+        Object.keys(data).forEach(k => {
+            _proxy[k] = data[k];
         })
         return _proxy;
     }
-    
+
     handler = {
         set: function (obj, prop, value) {
             // console.log('HANDLER SET', { obj, prop, value })
@@ -76,4 +77,6 @@ let ProxyDb = function (file = 'ProxyDb.json', data = {}, isLazy = true) {
     return getProxyObject(data);
 };
 
+
 module.exports = ProxyDb;
+
