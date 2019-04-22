@@ -42,6 +42,8 @@ let lazyWrite = (file, data) => {
 }
 
 let ProxyDb = function (file = 'ProxyDb.json', data = {}, isLazy = true) {
+    let handler, getProxyObject;
+
     file = file.toString();
     if (['Object', 'Array'].indexOf(data.constructor.name) === -1) {
         data = { data };
@@ -51,10 +53,19 @@ let ProxyDb = function (file = 'ProxyDb.json', data = {}, isLazy = true) {
     } else {
         isLazy ? lazyWrite(file, data) : Store.write(file, data);
     }
-    let handler = {
+    getProxyObject = (data)=>{
+        let _proxy = new Proxy(data, handler);
+        Object.keys( data ).forEach( k=>{
+            _proxy[k]=data[k];
+        })
+        return _proxy;
+    }
+    
+    handler = {
         set: function (obj, prop, value) {
+            // console.log('HANDLER SET', { obj, prop, value })
             if (['Object', 'Array'].indexOf(value.constructor.name) > -1) {
-                obj[prop] = new Proxy(value, handler);;
+                obj[prop] = getProxyObject(value);
             } else {
                 obj[prop] = value;
             }
@@ -62,8 +73,7 @@ let ProxyDb = function (file = 'ProxyDb.json', data = {}, isLazy = true) {
             return true;
         }
     };
-    return new Proxy(data, handler);
+    return getProxyObject(data);
 };
 
 module.exports = ProxyDb;
-
