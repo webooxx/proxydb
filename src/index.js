@@ -29,6 +29,11 @@ if (typeof window !== 'undefined' && window.localStorage) {
     }
 }
 
+let isNeedHandler = function( value ){
+    return Boolean(value) && ['Object', 'Array'].indexOf(value.constructor.name) > -1;
+}
+
+
 let ProxyDb = function (file = 'ProxyDb.json', data = {}, isLazy = true) {
     let handler, getProxyObject, lazyWrite, timeId = 0;
 
@@ -44,7 +49,7 @@ let ProxyDb = function (file = 'ProxyDb.json', data = {}, isLazy = true) {
     }
 
     file = file.toString();
-    if (['Object', 'Array'].indexOf(data.constructor.name) === -1) {
+    if ( !isNeedHandler(data) ) {
         data = { data };
     }
     if (Store.exists(file)) {
@@ -65,7 +70,7 @@ let ProxyDb = function (file = 'ProxyDb.json', data = {}, isLazy = true) {
     handler = {
         set: function (obj, prop, value) {
             // console.log('HANDLER SET', { obj, prop, value })
-            if (['Object', 'Array'].indexOf(value.constructor.name) > -1) {
+            if ( isNeedHandler(value) ) {
                 obj[prop] = getProxyObject(value);
             } else {
                 obj[prop] = value;
@@ -79,4 +84,5 @@ let ProxyDb = function (file = 'ProxyDb.json', data = {}, isLazy = true) {
 
 
 module.exports = ProxyDb;
+
 
