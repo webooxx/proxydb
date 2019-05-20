@@ -56,6 +56,7 @@ it("set long chain value", function () {
 });
 
 
+
 it("change long chain value", function () {
 
     initData.long.b2              = ['push'];
@@ -124,6 +125,18 @@ it("mulit-file delay mode init", async function () {
     assert.equal(existsDelay.toString(), [true, true].toString());
 });
 
+
+it("set undefined ", function () {
+
+    initData.test = undefined;
+    initData.subTest = {z:undefined};
+    
+    dbHandler.tagName = 'block';
+    dbHandler.test = undefined;
+    dbHandler.subTest = {z:undefined};
+    
+    assert.equal(fs.readFileSync(path, 'utf-8'), JSON.stringify(initData));
+});
 
 
 it('clear', function () {
