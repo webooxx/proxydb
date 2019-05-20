@@ -1,6 +1,6 @@
 {
   "name": "proxydb",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Fast access to memory objects",
   "main": "src/index.js",
   "scripts": {

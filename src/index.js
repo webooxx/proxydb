@@ -85,3 +85,4 @@ let ProxyDb = function (file = 'ProxyDb.json', data = {}, isLazy = true) {
 
 module.exports = ProxyDb;
 
+

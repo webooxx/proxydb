@@ -150,3 +150,4 @@ it('clear', function () {
     fs.existsSync(m2) && fs.unlinkSync(m2);
 })
 
+
